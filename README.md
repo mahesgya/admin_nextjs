@@ -1,44 +1,30 @@
-Admin AkuCuciin
-Project ini adalah panel admin untuk platform AkuCuciin, dikembangkan menggunakan Next.js, Tailwind CSS, dan shadcn/ui untuk tampilan yang modern dan responsif.
+# Admin AkuCuciin
 
-🚀 Menjalankan Project
-Jalankan server pengembangan dengan perintah berikut:
+Admin AkuCuciin adalah panel administrasi untuk platform **AkuCuciin**, sebuah layanan digital yang mempermudah mahasiswa dalam menggunakan jasa laundry dengan fitur seperti pembayaran online, antar-jemput, dan pembaruan progres laundry.
 
-bash
-Copy
-Edit
-npm run dev
-# atau
-yarn dev
-# atau
-pnpm dev
-# atau
-bun dev
-Buka http://localhost:3000 di browser untuk melihat hasilnya.
+## ✨ Teknologi yang Digunakan
 
-📌 Teknologi yang Digunakan
-Next.js – Framework React untuk aplikasi web modern.
+- **[Next.js](https://nextjs.org/)** – Framework React untuk aplikasi web modern dan cepat.
+- **[Tailwind CSS](https://tailwindcss.com/)** – Library styling berbasis utility-first untuk desain yang fleksibel.
+- **[shadcn/ui](https://ui.shadcn.com/)** – Komponen UI modular dan dapat dikustomisasi.
+- **[TypeScript](https://www.typescriptlang.org/)** – Menyediakan tipe data yang lebih ketat untuk kode yang lebih aman.
 
-Tailwind CSS – Library styling berbasis utility-first untuk desain yang fleksibel.
-
-shadcn/ui – Komponen UI yang dapat dikostumisasi untuk pengalaman pengguna yang optimal.
-
-📖 Pelajari Lebih Lanjut
-Untuk informasi lebih lanjut tentang teknologi yang digunakan, silakan kunjungi:
-
-Next.js Documentation
-
-Tailwind CSS Documentation
-
-shadcn/ui Documentation
-
-🚀 Deployment
-Untuk deployment, disarankan menggunakan Vercel untuk performa dan kemudahan integrasi dengan Next.js.
+---
 
 
+## 🔑 Fitur Utama
+- 🔹 **Autentikasi Admin** – Login aman menggunakan sistem token.
+- 🔹 **Manajemen Pengguna** – Kelola pelanggan dan mitra laundry.
+- 🔹 **Status Laundry** – Update dan lacak pesanan laundry.
+- 🔹 **Dashboard Statistik** – Analisis data pesanan dan keuangan.
+
+---
 
 
+## 📚 Dokumentasi Tambahan
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [shadcn/ui Documentation](https://ui.shadcn.com/)
 
-
-
+**©AkuCuciin. All Rights Reserved.**
 
