@@ -1,30 +1,13 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import {
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
+import * as React from "react";
+import { Frame, GalleryVerticalEnd, Map, PieChart, ShoppingCart, WashingMachine, User, Truck } from "lucide-react";
 
-  ShoppingCart,
-  WashingMachine,
-  User,
-  Truck,
-} from "lucide-react"
+import { NavMain } from "@/components/features/sidebar/nav-main";
+import { NavUser } from "@/components/features/sidebar/nav-user";
+import { TeamSwitcher } from "@/components/features/sidebar/team-switcher";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar";
 
-import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarRail,
-} from "@/components/ui/sidebar"
-
-// This is sample data.
 const data = {
   user: {
     name: "Admin Akucuciin",
@@ -62,7 +45,7 @@ const data = {
       items: [
         {
           title: "List Laundry",
-          url: "/dashboard/laundry/list",
+          url: "/dashboard/laundry",
         },
         {
           title: "Add New Laundry",
@@ -77,7 +60,7 @@ const data = {
       items: [
         {
           title: "List Customer",
-          url: "#",
+          url: "/dashboard/customer",
         },
       ],
     },
@@ -88,7 +71,7 @@ const data = {
       items: [
         {
           title: "List Driver",
-          url: "/dashboard/driver/list",
+          url: "/dashboard/driver",
         },
         {
           title: "Add Driver",
@@ -114,7 +97,7 @@ const data = {
       icon: Map,
     },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -130,5 +113,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
