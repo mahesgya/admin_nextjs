@@ -1,4 +1,5 @@
-export interface LoginResponse { 
+export interface LoginResponse {
+    success : boolean, 
     data: {
         accessToken: string;
         refreshToken: string;
@@ -11,6 +12,7 @@ export interface LogoutResponse{
 }
 
 export interface RefreshResponse{
+    success : boolean,
     data: {
         accessToken: string;
         refreshToken: string;
