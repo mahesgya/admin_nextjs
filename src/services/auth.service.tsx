@@ -14,6 +14,7 @@ const authService = {
             const {accessToken, refreshToken} = response.data.data;
             Cookies.set("accessToken", accessToken, {secure: true, sameSite: "none", expires: 1});
             Cookies.set("refreshToken", refreshToken, {secure: true, sameSite: "none", expires: 7});
+            console.log(response.data);
             return response.data;
         } catch (error) {
            handleApiError(error);

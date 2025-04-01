@@ -1,37 +1,9 @@
-interface Customer {
-    id: string;
-    name: string;
-    email: string;
-    address: string;
-    telephone: string;
-}
+import { Customer} from "./customer";
+import { LaundryPartners } from "./laundry";
+import { DriverOrder } from "./driver";
+import { Package } from "./package";
 
-interface LaundryPartner{
-    id: string;
-    name : string;
-    email : string;
-    address : string;
-    city : string;
-    area : string;
-    telephone : string;
-    maps_pinpoint : string;
-}
-
-interface Package{
-    id : string;
-    name : string;
-    price_text : string;
-    description : string;
-}
-
-interface Driver{
-    id : string | null;
-    name : string | null;
-    email : string | null;
-    telephone : string | null;
-}
-
-export interface Order {
+export interface Orders {
     id: string;
     content: string;
     status: string;
@@ -47,13 +19,13 @@ export interface Order {
     review: string | null;
     pickup_date: string;
     customer: Customer;
-    laundry_partner: LaundryPartner;
+    laundry_partner: LaundryPartners;
     package : Package;
-    driver : Driver;
+    driver : DriverOrder;
 
 }
 
-export interface OrdersResponse {
+export interface OrderResponses {
     success: boolean;
-    data: Order[];
+    data: Orders[];
 }

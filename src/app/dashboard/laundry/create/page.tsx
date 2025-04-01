@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Form = () => {
+const CreateLaundry = () => {
   return (
     <div>
       INI FORM LAUNDRY
@@ -8,4 +8,4 @@ const Form = () => {
   )
 }
 
-export default Form
+export default CreateLaundry
