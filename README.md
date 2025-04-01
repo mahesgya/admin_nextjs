@@ -13,7 +13,7 @@ Admin AkuCuciin adalah panel administrasi untuk platform **AkuCuciin**, sebuah l
 
 
 ## 🔑 Fitur Utama
-- 🔹 **Autentikasi Admin** – Login aman menggunakan sistem token.
+- 🔹 **Autentikasi Admin** – Login aman menggunakan Javascript Web Token.
 - 🔹 **Manajemen Pengguna** – Kelola pelanggan dan mitra laundry.
 - 🔹 **Status Laundry** – Update dan lacak pesanan laundry.
 - 🔹 **Dashboard Statistik** – Analisis data pesanan dan keuangan.
