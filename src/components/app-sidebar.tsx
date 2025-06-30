@@ -64,10 +64,6 @@ const data = {
           title: "List Laundry",
           url: "/dashboard/laundry/list",
         },
-        {
-          title: "Add New Laundry",
-          url: "/dashboard/laundry/create",
-        },
       ],
     },
     {

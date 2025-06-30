@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AxiosError } from "axios";
 import Swal from "sweetalert2";
 
 import authService from "@/services/auth.service";
@@ -30,18 +29,10 @@ const Login = () => {
       setPassword("");
       router.push("/dashboard");
     } catch (error : unknown) {
-      let errMsg = "Terjadi Kesalahan, silahkan coba lagi";
-      if(error instanceof AxiosError){
-        errMsg = error.response?.data?.errors;
-      }else if(error instanceof Error){
-        errMsg = error.message;
-      }else{
-        errMsg = "Terjadi Kesalahan, silahkan coba lagi";
-      }
       Swal.fire({
         icon: "error",
-        title: "Gagal Login",
-        text: errMsg,
+        title: "Error",
+        text: error instanceof Error ? error.message : "Terjadi kesalahan, silahkan coba lagi.",
         showConfirmButton : true,
         showCloseButton : true,
       })
