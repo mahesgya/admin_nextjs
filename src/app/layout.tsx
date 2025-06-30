@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Quicksand } from "next/font/google";
+import { ThemeProvider } from "@/components/features/sidebar/theme-provider";
 import AppLayout from "./AppLayout";
 
 export const metadata: Metadata = {
@@ -20,9 +21,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${quicksand.className}`}>
-        <AppLayout>{children}</AppLayout>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <AppLayout>{children}</AppLayout>
+        </ThemeProvider>
       </body>
     </html>
   );

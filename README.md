@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Admin Dashboard - AkuCuciin
 
-## Getting Started
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![shadcn/ui](https://img.shields.io/badge/shadcn/ui-000000?style=for-the-badge&logo=shadcnui&logoColor=white)
 
-First, run the development server:
+Selamat datang di panel administrasi AkuCuciin! Ini adalah pusat kendali untuk platform **AkuCuciin**, sebuah layanan digital yang mempermudah mahasiswa dalam menggunakan jasa laundry dengan fitur seperti pembayaran online, antar-jemput, dan pembaruan progres laundry secara real-time.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Fitur Utama
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+-   🔹 **Autentikasi Admin:** Proses login yang aman untuk admin menggunakan *JSON Web Token (JWT)*.
+-   🔹 **Manajemen Pengguna:** Mengelola data pelanggan dan mitra laundry yang terdaftar.
+-   🔹 **Manajemen Status Laundry:** Memperbarui dan melacak status pesanan dari diterima hingga selesai.
+-   🔹 **Dashboard Statistik:** Visualisasi data untuk menganalisis performa pesanan dan keuangan.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🚀 Teknologi yang Digunakan
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+-   **[Next.js](https://nextjs.org/)**: Framework React untuk aplikasi web modern dan cepat.
+-   **[TypeScript](https://www.typescriptlang.org/)**: Menambahkan tipe data statis untuk kode yang lebih aman dan mudah dikelola.
+-   **[Tailwind CSS](https://tailwindcss.com/)**: Kerangka kerja CSS berbasis utility-first untuk desain yang fleksibel.
+-   **[shadcn/ui](https://ui.shadcn.com/)**: Kumpulan komponen UI yang dapat disusun ulang, modular, dan aksesibel.
 
-## Learn More
+## ⚙️ Memulai Proyek
 
-To learn more about Next.js, take a look at the following resources:
+Untuk menjalankan proyek ini di lingkungan lokal, ikuti langkah-langkah di bawah ini.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 1. Prasyarat
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Pastikan Anda sudah menginstal perangkat lunak berikut di komputer Anda:
+-   [Node.js](https://nodejs.org/) (v18.x atau lebih baru)
+-   [pnpm](https://pnpm.io/installation) (atau npm/yarn)
 
-## Deploy on Vercel
+### 2. Instalasi
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1.  **Clone repositori ini:**
+    ```bash
+    git clone [https://github.com/mahesgya/admin_nextjs.git](https://github.com/mahesgya/admin_nextjs.git)
+    ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2.  **Masuk ke direktori proyek:**
+    ```bash
+    cd admin_nextjs
+    ```
+
+3.  **Install semua dependency:**
+    ```bash
+    pnpm install
+    ```
+
+4.  **Siapkan Environment Variables:**
+    Buat file baru bernama `.env.local` di root proyek dengan menyalin dari `.env.example` (jika ada) atau buat dari awal.
+    ```bash
+    # .env.local
+    JWT_SECRET="ganti-dengan-secret-key-yang-sangat-aman-dan-panjang"
+    # Tambahkan variabel lain jika ada (misal: DATABASE_URL)
+    ```
+
+5.  **Jalankan server development:**
+    ```bash
+    pnpm dev
+    ```
+
+6.  Buka browser Anda dan kunjungi **http://localhost:3000**.
+
+## 📜 Skrip yang Tersedia
+
+-   `pnpm dev`: Menjalankan aplikasi dalam mode development.
+-   `pnpm build`: Membuat production-ready build dari aplikasi.
+-   `pnpm start`: Menjalankan server dari production build.
+-   `pnpm lint`: Menjalankan linter untuk memeriksa kualitas kode.
+
+
+## 📚 Dokumentasi Tambahan
+- [Dokumentasi Next.js](https://nextjs.org/docs)
+- [Dokumentasi Tailwind CSS](https://tailwindcss.com/docs)
+- [Dokumentasi shadcn/ui](https://ui.shadcn.com/docs)
+
+
+---
+**© 2025 AkuCuciin. All Rights Reserved.**

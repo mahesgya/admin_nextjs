@@ -1,10 +1,9 @@
 "use client";
 
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/features/sidebar/app-sidebar";
 import { usePathname } from "next/navigation";
-import { ThemeProvider } from "@/components/theme-provider";
-import { ModeToggle } from "@/components/toggle-mode";
+import { ModeToggle } from "@/components/features/sidebar/toggle-mode";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathName = usePathname();
@@ -15,15 +14,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-      <SidebarProvider>
-        {!isLoginPage && <AppSidebar />}
-        <main>
-          {!isLoginPage && <SidebarTrigger />}
-          {!isLoginPage && <ModeToggle />}
-          {children}
-        </main>
-      </SidebarProvider>
-    </ThemeProvider>
+    <SidebarProvider>
+      {!isLoginPage && <AppSidebar />}
+      <main>
+        {!isLoginPage && <SidebarTrigger />}
+        {!isLoginPage && <ModeToggle />}
+        {children}
+      </main>
+    </SidebarProvider>
   );
 }

@@ -13,7 +13,6 @@ const CreateLaundry = () => {
     name: "",
     email: "",
     description: "",
-    password: "",
     confirm_password: "",
     telephone: "",
     address: "",
@@ -50,7 +49,6 @@ const CreateLaundry = () => {
       maps_pinpoint: "",
     });
   };
-
 
   return (
     <div className="w-full flex flex-col flex-grow">

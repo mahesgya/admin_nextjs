@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
-import {Card, CardContent} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { PacmanLoader } from "react-spinners";
 
 const Login = () => {
@@ -29,9 +29,17 @@ const Login = () => {
       setPassword("");
       router.push("/dashboard");
     } catch (error : unknown) {
+      let errMsg = "Terjadi Kesalahan, silahkan coba lagi";
+      if(error instanceof AxiosError){
+        errMsg = error.response?.data?.errors;
+      }else if(error instanceof Error){
+        errMsg = error.message;
+      }else{
+        errMsg = "Terjadi Kesalahan, silahkan coba lagi";
+      }
       Swal.fire({
         icon: "error",
-        title: "Error",
+        title: "Gagal Login",
         text: error instanceof Error ? error.message : "Terjadi kesalahan, silahkan coba lagi.",
         showConfirmButton : true,
         showCloseButton : true,
