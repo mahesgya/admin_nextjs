@@ -47,9 +47,33 @@ const Laundry = () => {
     laundry.name.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
+  const handleDelete = async (id: string) => {
+    if (!accessToken) {
+      AlertUtils.showError("Sesi Anda telah berakhir. Silakan login kembali.");
+      return
+    }
+
+    try{
+      setLoading(true)
+      const isConfirmed = await AlertUtils.showConfirmation("Apakah anda yakin ingin menghapus laundry ini?")
+
+      if(isConfirmed){
+        await laundryService.deleteLaundry(id, accessToken)
+        AlertUtils.showSuccess("Laundry berhasil dihapus.")
+        window.location.reload()
+      }else{
+        return
+      }
+    }catch(error){
+      AlertUtils.showError(error instanceof Error ? error.message : "Terjadi kesalahan, silahkan coba lagi.")
+    }finally{
+      setLoading(false)
+    }
+  }
+
   if (loading) {
     return (
-      <div className="w-[100dvw] h-[100dvh] flex items-center justify-center">
+      <div className="w-[100dvw] md:w-[80dvw] h-[100dvh] md:h-[80dvh]  flex items-center justify-center">
         <PacmanLoader color="#64b5f6" size={40} />
       </div>
     );
@@ -146,12 +170,12 @@ const Laundry = () => {
                             Edit
                           </DropdownMenuItem>
                         </Link>
-                        <DropdownMenuItem className="text-red-500 focus:text-red-500 ">
-                          <Trash2 className="mr-2 h-4 w-4 text-red-500" />
-                          <button>
-                            Hapus
-                          </button>
-                        </DropdownMenuItem>
+                        <button onClick={() => handleDelete(laundry.id)} className="w-full">
+                          <DropdownMenuItem className="w-full text-red-500 hover:text-red-500">
+                              <Trash2 className="mr-2 h-4 w-4 text-red-500" />
+                              <p className="text-red-500">Hapus</p>
+                          </DropdownMenuItem>
+                        </button>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -189,14 +213,18 @@ const Laundry = () => {
                         </DropdownMenuItem>
                       </Link>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <Edit className="mr-2 h-4 w-4" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-500 hover:text-red-500 ">
-                        <Trash2 className="mr-2 h-4 w-4 text-red-500" />
-                        Hapus
-                      </DropdownMenuItem>
+                     <Link href={`/dashboard/laundry/edit/${laundry.id}`} passHref>
+                        <DropdownMenuItem>
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                      </Link>
+                      <button onClick={() => handleDelete(laundry.id)} className="w-full">
+                          <DropdownMenuItem className="w-full text-red-500 hover:text-red-500">
+                              <Trash2 className="mr-2 h-4 w-4 text-red-500" />
+                              <p className="text-red-500">Hapus</p>
+                          </DropdownMenuItem>
+                      </button>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>

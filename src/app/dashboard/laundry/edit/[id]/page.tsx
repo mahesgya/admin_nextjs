@@ -5,12 +5,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { AlertUtils } from "@/components/utils/alert.utils";
 import laundryService from "@/services/laundry.service";
 import Cookies from "js-cookie";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
 
 const FormSkeleton = () => (
   <div className="grid w-full items-center gap-6 animate-pulse">
@@ -22,7 +22,6 @@ const FormSkeleton = () => (
     ))}
   </div>
 );
-
 
 const EditLaundryPage = () => {
   const router = useRouter();
@@ -44,7 +43,8 @@ const EditLaundryPage = () => {
   const [isLoading, setIsLoading] = useState(true); 
   const [isSubmitting, setIsSubmitting] = useState(false); 
   const [email, setEmail] = useState("");
-  const accessToken = Cookies.get("accessToken");
+  const accessToken: string | undefined = Cookies.get("accessToken");
+
 
   useEffect(() => {
     if (!id) return; 
@@ -52,7 +52,8 @@ const EditLaundryPage = () => {
     const fetchLaundryData = async () => {
       try {
         if (!accessToken) {
-          throw new Error("Access Token tidak ditemukan.");
+          AlertUtils.showError("Sesi Anda telah berakhir. Silakan login kembali.");
+          return
         }
         
         const response = await laundryService.getLaundryById(id, accessToken);
@@ -69,8 +70,7 @@ const EditLaundryPage = () => {
           maps_pinpoint: response?.maps_pinpoint,
         });
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Gagal Mendapatkan Data Laundry.";
-        Swal.fire("Error", errorMessage, "error");
+        AlertUtils.showError(error instanceof Error ? error.message : "Gagal Mendapatkan Data Laundry.")
         router.push("/dashboard/laundry"); 
       } finally {
         setIsLoading(false);
@@ -91,7 +91,8 @@ const EditLaundryPage = () => {
 
     try {
       if (!accessToken) {
-        throw new Error("Sesi Anda telah berakhir. Silakan login kembali.");
+        AlertUtils.showError("Sesi Anda telah berakhir. Silakan login kembali.");
+        return
       }
 
       const payload = {
@@ -100,20 +101,16 @@ const EditLaundryPage = () => {
         longitude: formData.longitude ? parseFloat(formData.longitude) : 0,
       };
 
-      await laundryService.putLaundry(payload, id, accessToken);
-
-      Swal.fire({
-        icon: "success",
-        title: "Berhasil!",
-        text: "Data laundry berhasil diperbarui.",
-        showConfirmButton: true,
-      }).then(() => {
+      const isConfirmed = await AlertUtils.showConfirmation("Apakah anda yakin untuk mengubah data laundry?")
+      if(isConfirmed){
+        await laundryService.putLaundry(payload, id, accessToken);
+        AlertUtils.showSuccess("Data laundry berhasil diperbarui.")
         router.push("/dashboard/laundry");
-      });
-
+      }else{
+        return;
+      }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Terjadi kesalahan, silahkan coba lagi.";
-      Swal.fire("Gagal", errorMessage, "error");
+      AlertUtils.showError(error instanceof Error ? error.message : "Gagal Mendapatkan Data Laundry.")
     } finally {
       setIsSubmitting(false);
     }

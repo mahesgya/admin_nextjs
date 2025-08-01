@@ -10,7 +10,7 @@ import Cookies from "js-cookie";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; 
 import { useState } from "react";
-import Swal from "sweetalert2";
+import { AlertUtils } from "@/components/utils/alert.utils";
 
 const CreateLaundryPage = () => {
   const router = useRouter();
@@ -42,14 +42,15 @@ const CreateLaundryPage = () => {
     setIsSubmitting(true);
 
     if (formData.password !== formData.confirm_password) {
-      Swal.fire("Error", "Password dan konfirmasi password tidak cocok!", "error");
+      AlertUtils.showError("Password dan konfirmasi password tidak cocok!")
       setIsSubmitting(false);
       return;
     }
 
     try {
       if (!accessToken) {
-        throw new Error("Sesi Anda telah berakhir. Silakan login kembali.");
+          AlertUtils.showError("Sesi Anda telah berakhir. Silakan login kembali.");
+          return
       }
 
       const payload = {
@@ -58,20 +59,18 @@ const CreateLaundryPage = () => {
         longitude: formData.longitude ? parseFloat(formData.longitude) : 0,
       };
 
-      await laundryService.postLaundry(payload, accessToken);
+      const isConfirmed = await AlertUtils.showConfirmation("Apakah anda yakin untuk menambah laundry baru?");
 
-      Swal.fire({
-        icon: "success",
-        title: "Berhasil!",
-        text: "Data laundry baru berhasil ditambahkan.",
-        showConfirmButton: true,
-      }).then(() => {
+      if(isConfirmed){
+        await laundryService.postLaundry(payload, accessToken);
+        AlertUtils.showSuccess("Data laundry baru berhasil ditambahkan")
         router.push("/dashboard/laundry");
-      });
-
+      }else{
+        return
+      }
+     
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Terjadi kesalahan, silahkan coba lagi.";
-      Swal.fire("Gagal", errorMessage, "error");
+      AlertUtils.showError(error instanceof Error ? error.message : "Terjadi kesalahan, silahkan coba lagi.")
     } finally {
       setIsSubmitting(false);
     }
