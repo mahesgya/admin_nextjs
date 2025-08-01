@@ -1,12 +1,12 @@
 import { handleApiError } from "@/lib/errorHandle";
-import { PackageForm, PackageResponses, PostPackageResponse } from "@/types/package";
+import { PackageData, PackageForm, PackageResponses, PostPackageResponse, PackageSingleResponse } from "@/types/package";
 import axios from "axios";
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const packageService = {
     getPackageById: async (idLaundry:string, idPackage:string, accessToken:string) => {
         try {
-            const response = await axios.get<PackageResponses>(`${BASE_URL}/api/admin/laundry_partners/${idLaundry}/package/${idPackage}`,{
+            const response = await axios.get<PackageSingleResponse>(`${BASE_URL}/api/admin/laundry_partner/${idLaundry}/package/${idPackage}`,{
                 headers: { Authorization: `Bearer ${accessToken}` },
             })
 
@@ -17,11 +17,11 @@ const packageService = {
     },
     getPackageByLaundry: async (idLaundry:string, accessToken:string) => {
         try {
-            const response = await axios.get<PackageResponses>(`${BASE_URL}/api/admin/laundry_partners/${idLaundry}`,{
+            const response = await axios.get<PackageResponses>(`${BASE_URL}/api/laundry_partner/${idLaundry}`,{
                 headers: { Authorization: `Bearer ${accessToken}` },
             })
-
-            return response.data.data;
+            const packages: PackageData = response.data.data
+            return packages;
         } catch (error) {
             handleApiError(error);
         }
