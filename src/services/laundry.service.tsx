@@ -1,5 +1,5 @@
 import { handleApiError } from "@/lib/errorHandle";
-import { LaundryResponses, LaundryPartnerForm, LaundryData, PostLaundryResponse } from "@/types/laundry";
+import { LaundryResponses, LaundryPartnerForm, LaundryData, PostLaundryResponse, LaundrySingleResponse } from "@/types/laundry";
 import axios from "axios";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -17,6 +17,18 @@ const laundryService = {
             handleApiError(error)
         }
     },
+    getLaundryById : async (id:string , accessToken:string) => {
+        try {
+            const response = await axios.get<LaundrySingleResponse>(`${BASE_URL}/api/laundry_partner/${id}`, {
+                headers: {Authorization: `Bearer ${accessToken}`},
+            })
+
+            const laundry: LaundryData = response.data.data;
+            return laundry;
+        } catch (error) {
+            handleApiError(error)
+        }
+    },
     postLaundry: async (formData: LaundryPartnerForm, accessToken:string) => {
         try {
             const response = await axios.post<PostLaundryResponse>(`${BASE_URL}/api/admin/laundry_partner`, formData, {
@@ -28,7 +40,7 @@ const laundryService = {
             handleApiError(error);
         }
     },
-    putLaundry: async (formData: Pick<LaundryPartnerForm, "email" | "name" | "description" | "telephone" | "address" | "maps_pinpoint" | "city" | "area">, idLaundry : string, accessToken : string ) => {
+    putLaundry: async (formData: Pick<LaundryPartnerForm, "name" | "description" | "telephone" | "address" | "maps_pinpoint" | "city" | "area" | "latitude" | "longitude">, idLaundry : string, accessToken : string ) => {
         try {
             const response = await axios.put<PostLaundryResponse>(`${BASE_URL}/api/admin/laundry_partner/${idLaundry}`, formData, {
                 headers: { Authorization: `Bearer ${accessToken}` },
