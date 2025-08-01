@@ -1,5 +1,6 @@
 import Swal, { SweetAlertResult } from "sweetalert2";
 
+
 export const AlertUtils = {
   showSuccess: (message: string): Promise<SweetAlertResult> => {
     return Swal.fire({
@@ -7,12 +8,14 @@ export const AlertUtils = {
       title: "Success!",
       text: message,
       customClass: {
-        popup: 'rounded-lg shadow-lg bg-white dark:bg-slate-800',
-        title: 'text-slate-900 dark:text-white',
-        htmlContainer: 'text-slate-600 dark:text-slate-300',
-        confirmButton: 'px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors',
+        container: 'bg-white ',
+        popup: 'rounded-xl shadow-lg bg-white',
+        title: 'text-slate-900 ',
+        validationMessage: 'text-slate-900',
+        htmlContainer: 'text-slate-600 dark:text-slate-400',
+        confirmButton: 'px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-colors',
       },
-      buttonsStyling: false, 
+      buttonsStyling: false,
     });
   },
 
@@ -22,10 +25,10 @@ export const AlertUtils = {
       title: "Gagal",
       text: message,
       customClass: {
-        popup: 'rounded-lg shadow-lg bg-white dark:bg-slate-800',
-        title: 'text-slate-900 dark:text-white',
-        htmlContainer: 'text-slate-600 dark:text-slate-300',
-        confirmButton: 'px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors',
+        popup: 'rounded-xl shadow-lg bg-white dark:bg-slate-800',
+        title: 'text-slate-900 dark:text-slate-100',
+        htmlContainer: 'text-slate-600 dark:text-slate-400',
+        confirmButton: 'px-4 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 transition-colors',
       },
       buttonsStyling: false,
     });
@@ -33,18 +36,19 @@ export const AlertUtils = {
 
   showConfirmation: async (message: string): Promise<boolean> => {
     const result = await Swal.fire({
-      title: "Are you sure?",
+      title: "Apakah Anda yakin?",
       text: message,
       icon: "warning",
       showCancelButton: true,
       customClass: {
-        popup: 'rounded-lg shadow-lg bg-white dark:bg-slate-800',
-        title: 'text-slate-900 dark:text-white',
-        htmlContainer: 'text-slate-600 dark:text-slate-300',
-        confirmButton: 'px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors ml-2',
-        cancelButton: 'px-4 py-2 bg-gray-200 text-slate-800 rounded-md hover:bg-gray-300 dark:bg-slate-600 dark:text-white dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors',
+        actions: 'gap-x-3',
+        popup: 'rounded-xl shadow-lg bg-white dark:bg-slate-800',
+        title: 'text-slate-900 dark:text-slate-100',
+        htmlContainer: 'text-slate-600 dark:text-slate-400',
+        confirmButton: 'px-4 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 transition-colors',
+        cancelButton: 'px-4 py-2 bg-slate-100 text-slate-800 rounded-lg hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 transition-colors',
       },
-      buttonsStyling: false, 
+      buttonsStyling: false,
     });
 
     return result.isConfirmed;
