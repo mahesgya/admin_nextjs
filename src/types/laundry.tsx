@@ -33,6 +33,11 @@ export interface LaundryResponses{
     data : LaundryData[];
 }
 
+export interface LaundrySingleResponse {
+  success: boolean;
+  data: LaundryData; 
+}
+
 
 export interface PostLaundryResponse{ 
     success: boolean;
