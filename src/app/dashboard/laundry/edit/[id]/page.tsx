@@ -11,6 +11,7 @@ import Cookies from "js-cookie";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSidebar } from "@/components/ui/sidebar";
 
 const FormSkeleton = () => (
   <div className="grid w-full items-center gap-6 animate-pulse">
@@ -24,6 +25,7 @@ const FormSkeleton = () => (
 );
 
 const EditLaundryPage = () => {
+  const { state } = useSidebar()
   const router = useRouter();
   const params = useParams();
   const id = params.id as string; 
@@ -106,8 +108,6 @@ const EditLaundryPage = () => {
         await laundryService.putLaundry(payload, id, accessToken);
         AlertUtils.showSuccess("Data laundry berhasil diperbarui.")
         router.push("/dashboard/laundry");
-      }else{
-        return;
       }
     } catch (error) {
       AlertUtils.showError(error instanceof Error ? error.message : "Gagal Mendapatkan Data Laundry.")
@@ -117,7 +117,12 @@ const EditLaundryPage = () => {
   };
 
   return (
-      <div className="w-[100dvw] md:w-[80dvw] flex flex-col flex-grow p-4 md:p-6">
+      <div className={`transition-all duration-300 ease-in-out flex flex-col flex-grow p-2 md:p-4 ${
+            state === "expanded"
+              ? "w-[100dvw] md:w-[90dvw] lg:w-[80dvw]"
+              : "w-[100dvw] md:w-[115dvw] lg:w-[95dvw]"
+          }`}
+      >
       <form onSubmit={handleSubmit} className="w-full">
         <Card className="w-full">
           <CardHeader>

@@ -60,9 +60,7 @@ const Laundry = () => {
       if(isConfirmed){
         await laundryService.deleteLaundry(id, accessToken)
         AlertUtils.showSuccess("Laundry berhasil dihapus.")
-        window.location.reload()
-      }else{
-        return
+        setLaundries(prev => prev.filter(l => l.id !== id));
       }
     }catch(error){
       AlertUtils.showError(error instanceof Error ? error.message : "Terjadi kesalahan, silahkan coba lagi.")
@@ -157,7 +155,7 @@ const Laundry = () => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Aksi</DropdownMenuLabel>
-                        <Link href={`/dashboard/laundry/services/${laundry.id}`} passHref>
+                        <Link href={`/dashboard/laundry/packages/${laundry.id}`} passHref>
                           <DropdownMenuItem>
                             <Eye className="mr-2 h-4 w-4" />
                             Lihat Layanan
@@ -185,7 +183,7 @@ const Laundry = () => {
           </Table>
         </div>
 
-        <div className="grid gap-4 md:hidden px-4 py-2 ">
+        <div className="grid gap-4 md:hidden py-2 ">
           {filteredLaundries?.map((laundry) => (
             <Card key={laundry.id} className="rounded-xl shadow-sm dark:border-gray-700 bg-white dark:bg-black transition">
               <CardHeader className="px-4 py-1">
@@ -206,7 +204,7 @@ const Laundry = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="z-50">
                       <DropdownMenuLabel>Aksi</DropdownMenuLabel>
-                      <Link href={`/dashboard/services/${laundry.id}`} passHref>
+                      <Link href={`/dashboard/laundry/packages/${laundry.id}`} passHref>
                         <DropdownMenuItem>
                           <Eye className="mr-2 h-4 w-4" />
                           Lihat Layanan

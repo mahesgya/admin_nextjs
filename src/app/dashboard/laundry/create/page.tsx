@@ -11,8 +11,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation"; 
 import { useState } from "react";
 import { AlertUtils } from "@/components/utils/alert.utils";
+import { useSidebar } from "@/components/ui/sidebar";
 
 const CreateLaundryPage = () => {
+  const { state } = useSidebar()
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
@@ -65,10 +67,7 @@ const CreateLaundryPage = () => {
         await laundryService.postLaundry(payload, accessToken);
         AlertUtils.showSuccess("Data laundry baru berhasil ditambahkan")
         router.push("/dashboard/laundry");
-      }else{
-        return
       }
-     
     } catch (error) {
       AlertUtils.showError(error instanceof Error ? error.message : "Terjadi kesalahan, silahkan coba lagi.")
     } finally {
@@ -77,7 +76,12 @@ const CreateLaundryPage = () => {
   };
 
   return (
-    <div className="w-[100dvw] md:w-[80dvw] flex flex-col flex-grow p-4 md:p-6">
+    <div className={`transition-all duration-300 ease-in-out flex flex-col flex-grow p-2 md:p-4 ${
+        state === "expanded"
+          ? "w-[100dvw] md:w-[90dvw] lg:w-[80dvw]"
+          : "w-[100dvw] md:w-[115dvw] lg:w-[95dvw]"
+      }`}
+    >
       <form onSubmit={handleSubmit} className="w-full">
         <Card className="w-full">
           <CardHeader>
