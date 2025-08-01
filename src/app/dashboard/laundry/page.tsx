@@ -1,7 +1,10 @@
 "use client";
 
 import * as React from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import Cookies from "js-cookie";
+
 import { MoreHorizontal, PlusCircle, Trash2, Edit, Eye, MapPin, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,16 +13,16 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useState, useEffect } from "react";
-import laundryService from "@/services/laundry.service";
-import Cookies from "js-cookie";
-import Swal from "sweetalert2";
 import { PacmanLoader } from "react-spinners";
 import { LaundryData } from "@/types/laundry";
+
+import { AlertUtils } from "@/components/utils/alert.utils";
+import laundryService from "@/services/laundry.service";
 
 const Laundry = () => {
   const [laundries, setLaundries] = useState<LaundryData[]>([])  ;
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const accessToken: string | undefined = Cookies.get("accessToken");
 
   useEffect(() => {
@@ -28,16 +31,10 @@ const Laundry = () => {
         setLoading(true);
         if (accessToken) {
           const response = await laundryService.getLaundries(accessToken);
-          await setLaundries(response);
+          setLaundries(response);
         }
       } catch (error) {
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: error instanceof Error ? error.message : "Terjadi kesalahan, silahkan coba lagi.",
-          showConfirmButton: true,
-          showCloseButton: true,
-        });
+        AlertUtils.showError(error instanceof Error ? error.message : "Terjadi kesalahan, silahkan coba lagi.")
       } finally {
         setLoading(false);
       }
@@ -45,6 +42,10 @@ const Laundry = () => {
 
     fetchLaundries();
   }, []);
+
+  const filteredLaundries = laundries.filter(laundry => 
+    laundry.name.toLowerCase().includes(searchQuery.toLowerCase())
+  )
 
   if (loading) {
     return (
@@ -63,8 +64,8 @@ const Laundry = () => {
           </div>
           <div className="flex items-center gap-2 w-full md:w-auto">
             <div className="relative w-full md:w-64">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input type="search" placeholder="Cari laundry..." className="pl-8 w-full" />
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground " />
+              <Input type="search" placeholder="Cari laundry..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-8 w-full dark:focus:ring-white/70" />
             </div>
             <Link href="/dashboard/laundry/create" passHref>
               <Button className="w-full md:w-auto">
@@ -82,15 +83,15 @@ const Laundry = () => {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[200px]">Nama Laundry</TableHead>
-                <TableHead>Info Kontak</TableHead>
-                <TableHead>Lokasi</TableHead>
-                <TableHead>Deskripsi</TableHead>
+                <TableHead className="w-[80px]">Info Kontak</TableHead>
+                <TableHead className="w-[80px]">Lokasi</TableHead>
+                <TableHead className="w-[300px]">Deskripsi</TableHead>
                 <TableHead className="text-center w-[80px]">Maps</TableHead>
                 <TableHead className="text-right w-[80px]">Aksi</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {laundries?.map((laundry) => (
+              {filteredLaundries?.map((laundry) => (
                 <TableRow key={laundry.id} className="hover:bg-muted/50">
                   <TableCell className="font-medium">{laundry.name}</TableCell>
                   <TableCell>
@@ -132,20 +133,24 @@ const Laundry = () => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Aksi</DropdownMenuLabel>
-                        <Link href={`/services/${laundry.id}`} passHref>
+                        <Link href={`/dashboard/laundry/services/${laundry.id}`} passHref>
                           <DropdownMenuItem>
                             <Eye className="mr-2 h-4 w-4" />
                             Lihat Layanan
                           </DropdownMenuItem>
                         </Link>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-500 focus:text-red-500 focus:bg-red-50">
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Hapus
+                        <Link href={`/dashboard/laundry/edit/${laundry.id}`} passHref>
+                          <DropdownMenuItem>
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit
+                          </DropdownMenuItem>
+                        </Link>
+                        <DropdownMenuItem className="text-red-500 focus:text-red-500 ">
+                          <Trash2 className="mr-2 h-4 w-4 text-red-500" />
+                          <button>
+                            Hapus
+                          </button>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -157,7 +162,7 @@ const Laundry = () => {
         </div>
 
         <div className="grid gap-4 md:hidden px-4 py-2 ">
-          {laundries?.map((laundry) => (
+          {filteredLaundries?.map((laundry) => (
             <Card key={laundry.id} className="rounded-xl shadow-sm dark:border-gray-700 bg-white dark:bg-black transition">
               <CardHeader className="px-4 py-1">
                 <div className="flex items-start justify-between gap-2">
@@ -188,8 +193,8 @@ const Laundry = () => {
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600 hover:text-red-600 focus:bg-red-50">
-                        <Trash2 className="mr-2 h-4 w-4" />
+                      <DropdownMenuItem className="text-red-500 hover:text-red-500 ">
+                        <Trash2 className="mr-2 h-4 w-4 text-red-500" />
                         Hapus
                       </DropdownMenuItem>
                     </DropdownMenuContent>
