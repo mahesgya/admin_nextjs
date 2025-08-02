@@ -56,6 +56,10 @@ const driverService = {
                 headers : {Authorization : `Bearer ${accessToken}`},
             })
 
+            await axios.post(`${BASE_URL}/api/admin/order/${idOrder}/driver/${idDriver}`,{}, {
+                headers: { Authorization: `Bearer ${accessToken}` },
+            });
+
             return response.data;
         } catch (error) {
             handleApiError(error);

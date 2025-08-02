@@ -6,6 +6,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const orderService = {
     getOrders: async (accessToken: string, startDate?: string, endDate?: string) => {
         try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const params: { [key: string]: any } = {};
 
             if (startDate) {
@@ -22,6 +23,23 @@ const orderService = {
 
             const orders: Orders[] = response.data.data;
             return orders;
+        } catch (error) {
+            handleApiError(error);
+        }
+    },
+    exportExcel: async (accessToken: string, startDate?: string, endDate?: string) => {
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const params: { [key: string]: any } = {};
+            if (startDate) params.startDate = startDate;
+            if (endDate) params.endDate = endDate;
+
+            const response = await axios.get(`${BASE_URL}/api/admin/orders/excel`, {
+                params: params,
+                headers: { Authorization: `Bearer ${accessToken}` },
+                responseType: 'blob', 
+            });
+            return response;
         } catch (error) {
             handleApiError(error);
         }
