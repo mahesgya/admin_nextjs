@@ -69,10 +69,6 @@ const data = {
           title: "List Driver",
           url: "/dashboard/driver",
         },
-        {
-          title: "Add Driver",
-          url: "/dashboard/driver/create",
-        },
       ],
     },
   ],
