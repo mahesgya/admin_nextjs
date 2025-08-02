@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Frame, GalleryVerticalEnd, Map, PieChart, ShoppingCart, WashingMachine, User, Truck } from "lucide-react";
+import {Home, Frame, GalleryVerticalEnd, Map, PieChart, ShoppingCart, WashingMachine, User, Truck } from "lucide-react";
 
 import { NavMain } from "@/components/features/sidebar/nav-main";
 import { NavUser } from "@/components/features/sidebar/nav-user";
@@ -22,6 +22,12 @@ const data = {
     },
   ],
   navMain: [
+    {
+      title: "Home",
+      url: "/dashboard",
+      icon: Home,
+      isActive: false,
+    },
     {
       title: "Order",
       url: "/dashboard/order",

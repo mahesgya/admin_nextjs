@@ -3,6 +3,9 @@ import {
   ChevronsUpDown,
   LogOut,
 } from "lucide-react"
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import authService from "@/services/auth.service"; 
 
 import {
   Avatar,
@@ -36,6 +39,23 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const refreshToken = Cookies.get("refreshToken");
+
+    try {
+      if (refreshToken) {
+        await authService.logoutAdmin(refreshToken);
+      }
+    } catch (error) {
+      console.error("Server logout failed, clearing session locally:", error);
+    } finally {
+      Cookies.remove("refreshToken");
+      Cookies.remove("accessToken");
+      router.push("/login");
+    }
+  };
 
   return (
     <SidebarMenu>
@@ -58,7 +78,7 @@ export function NavUser({
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            className="w-[var(--radix-dropdown-menu-trigger-width)] min-w-56 rounded-lg"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}
@@ -76,9 +96,9 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut />
-              Log out
+            <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer">
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Log out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
