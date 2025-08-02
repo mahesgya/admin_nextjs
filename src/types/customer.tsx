@@ -15,5 +15,5 @@ export interface CustomerData extends Customer{
 
 export interface CustomerResponses{
     success : boolean;
-    data : Customer;
+    data : CustomerData[];
 }
