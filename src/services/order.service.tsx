@@ -1,6 +1,6 @@
 import axios from "axios";
 import { handleApiError } from "@/lib/errorHandle";
-import { OrderResponses, Orders } from "@/types/order";
+import { OrderResponses, Orders, OrderSingleResponse } from "@/types/order";
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const orderService = {
@@ -22,6 +22,18 @@ const orderService = {
             });
 
             const orders: Orders[] = response.data.data;
+            return orders;
+        } catch (error) {
+            handleApiError(error);
+        }
+    },
+    getOrderById: async (accessToken: string, orderId: string) => {
+        try {
+            const response = await axios.get<OrderSingleResponse>(`${BASE_URL}/api/admin/order/${orderId}`, {
+                headers: { Authorization: `Bearer ${accessToken}` },
+            });
+
+            const orders: Orders = response.data.data;
             return orders;
         } catch (error) {
             handleApiError(error);
@@ -54,6 +66,16 @@ const orderService = {
             handleApiError(error);
         }
     },
+    postPaymentReminders: async (accessToken: string, idOrder: string) => {
+        try {
+            const response = await axios.post(`${BASE_URL}/api/customer/order/${idOrder}/reminders/payment`, {}, {
+                headers: { Authorization: `Bearer ${accessToken}` },
+            });
+            return response.data;
+        } catch (error) {
+            handleApiError(error);
+        }
+    }
 }
 
 export default orderService
