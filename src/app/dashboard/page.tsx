@@ -114,7 +114,7 @@ const handleExport = async () => {
 
   if (loading) {
     return (
-      <div className="w-full h-[80dvh] flex items-center justify-center">
+      <div className="w-[100dvw] md:w-[80dvw] h-[100dvh] md:h-[80dvh]  flex items-center justify-center">
         <PacmanLoader color="#64b5f6" size={40} />
       </div>
     );

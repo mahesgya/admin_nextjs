@@ -102,9 +102,9 @@ const OrderTotalPage = () => {
 
   if (loading) {
     return (
-      <div className="w-full h-[80dvh] flex items-center justify-center">
-        <PacmanLoader color="#64b5f6" size={40} />
-      </div>
+        <div className="w-[100dvw] md:w-[80dvw] h-[100dvh] md:h-[80dvh]  flex items-center justify-center">
+            <PacmanLoader color="#64b5f6" size={40} />
+        </div>
     );
   }
 
@@ -214,7 +214,6 @@ const OrderTotalPage = () => {
                             <Link
                                 href={{
                                     pathname: `/dashboard/order/history/${order.id}`,
-                                    query: { data: JSON.stringify(order) }
                                 }} 
                                 passHref
                             >
@@ -256,7 +255,6 @@ const OrderTotalPage = () => {
                             <Link
                                 href={{
                                     pathname: `/dashboard/order/history/${order.id}`,
-                                    query: { data: JSON.stringify(order) }
                                 }} 
                                 passHref
                             >

@@ -25,10 +25,10 @@ const FormSkeleton = () => (
 );
 
 const EditLaundryPage = () => {
-  const { state } = useSidebar()
+  const { state } = useSidebar();
   const router = useRouter();
   const params = useParams();
-  const id = params.id as string; 
+  const id = params.id as string;
 
   const [formData, setFormData] = useState({
     name: "",
@@ -42,24 +42,23 @@ const EditLaundryPage = () => {
     maps_pinpoint: "",
   });
 
-  const [isLoading, setIsLoading] = useState(true); 
-  const [isSubmitting, setIsSubmitting] = useState(false); 
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [email, setEmail] = useState("");
   const accessToken: string | undefined = Cookies.get("accessToken");
 
-
   useEffect(() => {
-    if (!id) return; 
+    if (!id) return;
 
     const fetchLaundryData = async () => {
       try {
         if (!accessToken) {
           AlertUtils.showError("Sesi Anda telah berakhir. Silakan login kembali.");
-          return
+          return;
         }
-        
+
         const response = await laundryService.getLaundryById(id, accessToken);
-        setEmail(response?.email)
+        setEmail(response?.email);
         setFormData({
           name: response?.name,
           description: response?.description,
@@ -67,13 +66,13 @@ const EditLaundryPage = () => {
           address: response?.address,
           city: response?.city,
           area: response?.area,
-          latitude: String(response?.latitude), 
+          latitude: String(response?.latitude),
           longitude: String(response?.longitude),
           maps_pinpoint: response?.maps_pinpoint,
         });
       } catch (error) {
-        AlertUtils.showError(error instanceof Error ? error.message : "Gagal Mendapatkan Data Laundry.")
-        router.push("/dashboard/laundry"); 
+        AlertUtils.showError(error instanceof Error ? error.message : "Gagal Mendapatkan Data Laundry.");
+        router.push("/dashboard/laundry");
       } finally {
         setIsLoading(false);
       }
@@ -94,7 +93,7 @@ const EditLaundryPage = () => {
     try {
       if (!accessToken) {
         AlertUtils.showError("Sesi Anda telah berakhir. Silakan login kembali.");
-        return
+        return;
       }
 
       const payload = {
@@ -103,26 +102,21 @@ const EditLaundryPage = () => {
         longitude: formData.longitude ? parseFloat(formData.longitude) : 0,
       };
 
-      const isConfirmed = await AlertUtils.showConfirmation("Apakah anda yakin untuk mengubah data laundry?")
-      if(isConfirmed){
+      const isConfirmed = await AlertUtils.showConfirmation("Apakah anda yakin untuk mengubah data laundry?");
+      if (isConfirmed) {
         await laundryService.putLaundry(payload, id, accessToken);
-        AlertUtils.showSuccess("Data laundry berhasil diperbarui.")
+        AlertUtils.showSuccess("Data laundry berhasil diperbarui.");
         router.push("/dashboard/laundry");
       }
     } catch (error) {
-      AlertUtils.showError(error instanceof Error ? error.message : "Gagal Mendapatkan Data Laundry.")
+      AlertUtils.showError(error instanceof Error ? error.message : "Gagal Mendapatkan Data Laundry.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-      <div className={`transition-all duration-300 ease-in-out flex flex-col flex-grow p-2 md:p-4 ${
-            state === "expanded"
-              ? "w-[100dvw] md:w-[90dvw] lg:w-[80dvw]"
-              : "w-[100dvw] md:w-[115dvw] lg:w-[95dvw]"
-          }`}
-      >
+    <div className={`transition-all duration-300 ease-in-out flex flex-col flex-grow p-2 md:p-4 ${state === "expanded" ? "w-[100dvw] md:w-[90dvw] lg:w-[80dvw]" : "w-[100dvw] md:w-[115dvw] lg:w-[95dvw]"}`}>
       <form onSubmit={handleSubmit} className="w-full">
         <Card className="w-full">
           <CardHeader>
@@ -185,7 +179,9 @@ const EditLaundryPage = () => {
           </CardContent>
           <CardFooter className="flex justify-between">
             <Link href="/dashboard/laundry" passHref>
-              <Button variant="outline" type="button">Batal</Button>
+              <Button variant="outline" type="button">
+                Batal
+              </Button>
             </Link>
             <Button type="submit" disabled={isLoading || isSubmitting}>
               {isSubmitting ? "Menyimpan..." : "Simpan Perubahan"}

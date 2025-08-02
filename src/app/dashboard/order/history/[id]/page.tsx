@@ -2,8 +2,8 @@
 
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, User, Store, Truck, MapPin, Calendar, Package as PackageIcon, FileText, DollarSign, Weight, Edit } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, User, Store, Truck, MapPin, Calendar, Package as PackageIcon, FileText, DollarSign, Weight, Edit, Ticket, Star, CreditCard, BellRing } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -21,10 +21,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { useParams } from "next/navigation";
 
 const OrderDetailPage = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const params = useParams();
+  const orderId = params.id as string;
   const [order, setOrder] = useState<Orders | null>(null);
   const accessToken: string | undefined = Cookies.get("accessToken");
 
@@ -32,23 +34,25 @@ const OrderDetailPage = () => {
   const [selectedDriverId, setSelectedDriverId] = useState<string>("");
   const [isDriverLoading, setIsDriverLoading] = useState(true);
   const [isAssigning, setIsAssigning] = useState(false);
-
+  const [isSendingReminder, setIsSendingReminder] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [editedData, setEditedData] = useState<Partial<Pick<Orders, "status" | "weight" | "price" | "status_payment">>>({});
 
   useEffect(() => {
-    const dataString = searchParams.get("data");
-    if (dataString) {
-      try {
-        const parsedData = JSON.parse(decodeURIComponent(dataString));
-        setOrder(parsedData);
-      } catch (error) {
-        AlertUtils.showError(error instanceof Error ? error.message : "Gagal Memuat Data Order.");
-        router.back();
+    const fetchOrderId = async () => {
+      if (orderId && accessToken) {
+        try {
+          const data = await orderService.getOrderById(accessToken, orderId);
+          setOrder(data);
+        } catch (error) {
+          AlertUtils.showError(error instanceof Error ? error.message : "Gagal Memuat Data Order.");
+        }
       }
-    }
-  }, [searchParams, router]);
+    };
+
+    fetchOrderId();
+  }, [accessToken, orderId]);
 
   useEffect(() => {
     const fetchDrivers = async () => {
@@ -112,8 +116,7 @@ const OrderDetailPage = () => {
     try {
       const isConfirmed = await AlertUtils.showConfirmation("Apakah anda yakin ingin memberikan order ini kepada driver?");
       if (isConfirmed) {
-        const response = await driverService.assignDriver(order.id, selectedDriverId, accessToken);
-        console.log(response)
+        await driverService.assignDriver(order.id, selectedDriverId, accessToken);
         const assignedDriver = drivers.find((d) => d.id === selectedDriverId);
         if (assignedDriver) {
           setOrder((prev) => (prev ? { ...prev, driver: assignedDriver } : null));
@@ -155,10 +158,28 @@ const OrderDetailPage = () => {
     }
   };
 
+  const handleSendReminder = async () => {
+    if (!order || !accessToken) {
+      AlertUtils.showError("Data order atau token tidak ditemukan.");
+      return;
+    }
+
+    setIsSendingReminder(true);
+    try {
+      await orderService.postPaymentReminders(accessToken, order.id);
+      AlertUtils.showSuccess("Pengingat pembayaran berhasil dikirim ke customer.");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Gagal mengirim pengingat.";
+      AlertUtils.showError(errorMessage);
+    } finally {
+      setIsSendingReminder(false);
+    }
+  };
+
   if (!order) {
     return (
       <div className="w-[100dvw] md:w-[80dvw] h-[100dvh] md:h-[80dvh]  flex items-center justify-center">
-          <PacmanLoader color="#64b5f6" size={40} />
+        <PacmanLoader color="#64b5f6" size={40} />
       </div>
     );
   }
@@ -182,6 +203,12 @@ const OrderDetailPage = () => {
                   <CardDescription className="font-mono text-xs pt-1">{order.id}</CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
+                  {order.status_payment === "belum bayar" && order.payment_link && (
+                    <Button variant="secondary" size="sm" onClick={handleSendReminder} disabled={isSendingReminder}>
+                      <BellRing className="mr-2 h-4 w-4" />
+                      {isSendingReminder ? "Mengirim..." : "Kirim Pengingat"}
+                    </Button>
+                  )}
                   <Button variant="outline" size="icon" onClick={handleOpenEditDialog}>
                     <Edit className="h-4 w-4" />
                   </Button>
@@ -220,61 +247,155 @@ const OrderDetailPage = () => {
                     <p className="font-medium">{order.weight} Kg</p>
                   </div>
                 </div>
+
+                <div className="flex items-start gap-3">
+                  <Ticket className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                  <div>
+                    <p className="text-muted-foreground">Kode Referral</p>
+                    <p className="font-medium">{order.referral_code ? order.referral_code : "Tidak ada Kode Referral"}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CreditCard className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                  <div>
+                    <p className="text-muted-foreground">Link Pembayaran</p>
+                    {order.payment_link ? (
+                      <Button asChild variant="link" className="p-0 h-auto font-medium">
+                        <a href={order.payment_link} target="_blank" rel="noopener noreferrer">
+                          Buka Link Pembayaran
+                        </a>
+                      </Button>
+                    ) : (
+                      <p className="text-muted-foreground">Tidak Ada Link Pembayaran</p>
+                    )}
+                  </div>
+                </div>
                 <div className="flex items-start gap-3">
                   <DollarSign className="h-5 w-5 mt-0.5 text-muted-foreground" />
                   <div>
-                    <p className="text-muted-foreground">Total Harga</p>
+                    <p className="text-muted-foreground">Harga Asli</p>
                     <p className="font-semibold text-lg text-emerald-600 dark:text-emerald-400">{formatRupiah(order.price)}</p>
                   </div>
                 </div>
-              </div>
-              {order.note && (
-                <>
-                  <Separator />
-                  <div className="flex items-start gap-3">
-                    <FileText className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
-                    <div>
-                      <p className="text-muted-foreground">Catatan dari Customer</p>
-                      <p className="font-medium italic">{order.note}</p>
-                    </div>
+                <div className="flex items-start gap-3">
+                  <DollarSign className="h-5 w-5 mt-0.5 text-muted-foreground" />
+                  <div>
+                    <p className="text-muted-foreground">Harga Markup</p>
+                    <p className="font-semibold text-lg text-emerald-600 dark:text-emerald-400">{formatRupiah(order.price_after)}</p>
                   </div>
-                </>
-              )}
+                </div>
+              </div>
+              <>
+                <Separator />
+                <div className="flex items-start gap-3">
+                  <FileText className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                  <div>
+                    <p className="text-muted-foreground">Catatan dari Customer</p>
+                    <p className="font-medium italic">{order.note ? order.note : "Tidak Ada Catatan"}</p>
+                  </div>
+                </div>
+              </>
             </CardContent>
           </Card>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+            <Card>
+              <CardHeader className="flex flex-row items-center gap-3">
+                <User className="w-6 h-6 text-muted-foreground" />
+                <CardTitle>Info Customer</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm space-y-2">
+                <p className="font-semibold">{order.customer.name}</p>
+                <p className="text-muted-foreground">{order.customer.email}</p>
+                <p className="text-muted-foreground">{order.customer.telephone}</p>
+                <Separator className="my-2" />
+                <p className="text-muted-foreground">{order.customer.address}</p>
+                {order.maps_pinpoint && (
+                  <Button asChild variant="outline" size="sm" className="w-full mt-2">
+                    <a href={order.maps_pinpoint} target="_blank" rel="noopener noreferrer">
+                      <MapPin className="mr-2 h-4 w-4" /> Lihat Peta Customer
+                    </a>
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center gap-3">
+                <Store className="w-6 h-6 text-muted-foreground" />
+                <CardTitle>Info Laundry</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm space-y-2">
+                <p className="font-semibold">{order.laundry_partner.name}</p>
+                <p className="text-muted-foreground">{order.laundry_partner.telephone}</p>
+                <Separator className="my-2" />
+                <p className="text-muted-foreground">{order.laundry_partner.address}</p>
+                <Button asChild variant="outline" size="sm" className="w-full mt-2">
+                  <a href={order.laundry_partner.maps_pinpoint} target="_blank" rel="noopener noreferrer">
+                    <MapPin className="mr-2 h-4 w-4" /> Lihat Peta Laundry
+                  </a>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         <div className="space-y-6">
           <Card>
-            <CardHeader className="flex flex-row items-center gap-3">
-              <User className="w-6 h-6 text-muted-foreground" />
-              <CardTitle>Info Customer</CardTitle>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <Star className="w-6 h-6 text-muted-foreground" />
+                <CardTitle>Rating & Ulasan Customer</CardTitle>
+              </div>
             </CardHeader>
-            <CardContent className="text-sm space-y-2">
-              <p className="font-semibold">{order.customer.name}</p>
-              <p className="text-muted-foreground">{order.customer.email}</p>
-              <p className="text-muted-foreground">{order.customer.telephone}</p>
-              <Separator className="my-2" />
-              <p className="text-muted-foreground">{order.customer.address}</p>
-            </CardContent>
+            {order.rating > 0 ? (
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <Star key={i} className={`h-6 w-6 ${i < order.rating ? "text-yellow-400 fill-yellow-400" : "text-muted-foreground/50"}`} />
+                  ))}
+                  <span className="ml-2 font-bold text-lg">{order.rating.toFixed(1)}</span>
+                </div>
+                {order.review && (
+                  <>
+                    <Separator />
+                    <div className="flex items-start gap-3">
+                      <FileText className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                      <div>
+                        <p className="text-muted-foreground">Ulasan:</p>
+                        <blockquote className="border-l-2 pl-4 italic mt-1">{order.review}</blockquote>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            ) : (
+              <CardContent>Belum Ada Ulasan</CardContent>
+            )}
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center gap-3">
-              <Store className="w-6 h-6 text-muted-foreground" />
-              <CardTitle>Info Laundry</CardTitle>
+              <Ticket className="w-6 h-6 text-muted-foreground" />
+              <CardTitle>Kupon Digunakan</CardTitle>
             </CardHeader>
-            <CardContent className="text-sm space-y-2">
-              <p className="font-semibold">{order.laundry_partner.name}</p>
-              <p className="text-muted-foreground">{order.laundry_partner.telephone}</p>
-              <Separator className="my-2" />
-              <p className="text-muted-foreground">{order.laundry_partner.address}</p>
-              <Button asChild variant="outline" size="sm" className="w-full mt-2">
-                <a href={order.laundry_partner.maps_pinpoint} target="_blank" rel="noopener noreferrer">
-                  <MapPin className="mr-2 h-4 w-4" /> Lihat Peta Laundry
-                </a>
-              </Button>
-            </CardContent>
+            {order.coupon_code ? (
+              <CardContent className="text-sm space-y-3">
+                <div>
+                  <p className="text-muted-foreground">Kode</p>
+                  <p className="font-mono text-xs">{order.coupon_code}</p>
+                </div>
+                {order.coupon.description && (
+                  <div>
+                    <p className="text-muted-foreground">Deskripsi</p>
+                    <p className="italic">{`"${order.coupon.description}"`}</p>
+                  </div>
+                )}
+              </CardContent>
+            ) : (
+              <CardContent>
+                <p className="text-muted-foreground">Tidak Ada Kupon Diskon</p>
+              </CardContent>
+            )}
           </Card>
 
           <Card>

@@ -157,7 +157,6 @@ const OrderTodayPage = () => {
                             <Link
                                 href={{
                                     pathname: `/dashboard/order/history/${order.id}`,
-                                    query: { data: JSON.stringify(order) }
                                 }} 
                                 passHref
                             >
@@ -199,7 +198,6 @@ const OrderTodayPage = () => {
                             <Link
                                 href={{
                                     pathname: `/dashboard/order/history/${order.id}`,
-                                    query: { data: JSON.stringify(order) }
                                 }} 
                                 passHref
                             >
