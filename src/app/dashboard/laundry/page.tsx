@@ -161,6 +161,12 @@ const Laundry = () => {
                             Lihat Layanan
                           </DropdownMenuItem>
                         </Link>
+                        <Link href={`/dashboard/laundry/foto/${laundry.id}`} passHref>
+                          <DropdownMenuItem>
+                            <Eye className="mr-2 h-4 w-4" />
+                            Lihat Foto
+                          </DropdownMenuItem>
+                        </Link>
                         <DropdownMenuSeparator />
                         <Link href={`/dashboard/laundry/edit/${laundry.id}`} passHref>
                           <DropdownMenuItem>
@@ -209,6 +215,12 @@ const Laundry = () => {
                           <Eye className="mr-2 h-4 w-4" />
                           Lihat Layanan
                         </DropdownMenuItem>
+                      </Link>
+                      <Link href={`/dashboard/laundry/foto/${laundry.id}`} passHref>
+                          <DropdownMenuItem>
+                            <Eye className="mr-2 h-4 w-4" />
+                            Lihat Foto
+                          </DropdownMenuItem>
                       </Link>
                       <DropdownMenuSeparator />
                      <Link href={`/dashboard/laundry/edit/${laundry.id}`} passHref>
