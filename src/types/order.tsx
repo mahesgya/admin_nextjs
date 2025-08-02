@@ -11,6 +11,7 @@ export interface Orders {
     maps_pinpoint: string;
     weight: string;
     price: string;
+    price_after: string;
     coupon_code: string | null;
     referral_code: string | null;
     created_at: string;
