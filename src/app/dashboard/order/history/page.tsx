@@ -1,18 +1,10 @@
 "use client";
 
-import * as React from "react";
-import { useState, useEffect } from "react";
-import Cookies from "js-cookie";
-import Link from "next/link";
-import { Edit, MoreHorizontal, Search, Calendar as CalendarIcon } from "lucide-react";
-import { PacmanLoader } from "react-spinners";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AlertUtils } from "@/components/utils/alert.utils";
-import orderService from "@/services/order.service";
-import getPaginationRange from "@/components/utils/pagination.utils";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import useMediaQuery from "@/components/utils/media.query.utils";
 import {
   Pagination,
   PaginationContent,
@@ -22,21 +14,28 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Orders } from "@/types/order";
-import { useSidebar } from "@/components/ui/sidebar";
-import { getStatusBadge } from "@/components/utils/badge.utils";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { formatRupiah, formatDate } from "@/components/utils/format.utils";
-import { format, subDays } from "date-fns";
-import { DateRange } from "react-day-picker";
-import { Calendar } from "@/components/ui/calendar";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover";
+import { useSidebar } from "@/components/ui/sidebar";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { AlertUtils } from "@/components/utils/alert.utils";
+import { getStatusBadge } from "@/components/utils/badge.utils";
+import { formatDate, formatRupiah } from "@/components/utils/format.utils";
+import useMediaQuery from "@/components/utils/media.query.utils";
+import getPaginationRange from "@/components/utils/pagination.utils";
 import { cn } from "@/lib/utils";
+import orderService from "@/services/order.service";
+import { Orders } from "@/types/order";
+import { format, subDays } from "date-fns";
+import Cookies from "js-cookie";
+import { Calendar as CalendarIcon, Edit, MoreHorizontal, Search } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { DateRange } from "react-day-picker";
+import { PacmanLoader } from "react-spinners";
 
 const OrderTotalPage = () => {
   const { state } = useSidebar();
@@ -181,25 +180,30 @@ const OrderTotalPage = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Order ID</TableHead>
-                  <TableHead>Customer</TableHead>
+                  <TableHead>Order ID & Customer</TableHead>
                   <TableHead>Laundry</TableHead>
                   <TableHead>Paket</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Total</TableHead>
+                  <TableHead>Harga</TableHead>
+                  <TableHead>Harga Markup</TableHead>
                   <TableHead>Tanggal Jemput</TableHead>
+                  <TableHead>Dipesan Tanggal</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {currentOrders?.map((order) => (
                   <TableRow key={order.id} className="hover:bg-muted/50">
-                    <TableCell className="font-mono text-xs">{order.id}</TableCell>
-                    <TableCell className="font-medium">{order.customer.name}</TableCell>
+                    <TableCell className="font-mono text-xs">
+                      {order.customer?.name}
+                      <div className="text-[10px] text-gray-500 font-bold font-sans">{order.id}</div>
+                    </TableCell>
                     <TableCell>{order.laundry_partner.name}</TableCell>
                     <TableCell>{order.package.name}</TableCell>
                     <TableCell>{getStatusBadge(order.status)}</TableCell>
                     <TableCell>{formatRupiah(order.price)}</TableCell>
+                    <TableCell>{formatRupiah(order.price_after)}</TableCell>
                     <TableCell>{order.pickup_date}</TableCell>
+                    <TableCell>{format(new Date(order.created_at), 'dd MMM yyyy, HH:mm')}</TableCell>
 
                     <TableCell className="text-right">
                       <DropdownMenu>
