@@ -93,8 +93,7 @@ const handleExport = async () => {
       const link = document.createElement('a');
       link.href = url;
 
-      const randomSuffix = Math.floor(Math.random() * 1e6); // 6-digit random number
-      const fileName = `Laporan_Order_[${formattedStartDate} sampai ${formattedEndDate}]_diunduh_pada_${format(new Date(), "yyyy-MM-dd")}_${randomSuffix}.xlsx`;
+      const fileName = `Laporan_Order_[${formattedStartDate} sampai ${formattedEndDate}]_diunduh_pada_${new Date().toISOString()}.xlsx`;
       link.setAttribute('download', fileName);
 
       document.body.appendChild(link);
