@@ -1,27 +1,25 @@
 "use client";
 
-import * as React from "react";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowLeft, User, Store, Truck, MapPin, Calendar, Package as PackageIcon, FileText, DollarSign, Weight, Edit, Ticket, Star, CreditCard, BellRing } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { getStatusBadge, getPaymentBadge } from "@/components/utils/badge.utils";
-import { Orders } from "@/types/order";
 import { AlertUtils } from "@/components/utils/alert.utils";
-import { formatRupiah, formatDate } from "@/components/utils/format.utils";
-import { PacmanLoader } from "react-spinners";
-import { statusOptions, paymentOptions } from "@/components/utils/badge.utils";
-import Cookies from "js-cookie";
+import { getPaymentBadge, getStatusBadge, paymentOptions, statusOptions } from "@/components/utils/badge.utils";
+import { formatDate, formatRupiah } from "@/components/utils/format.utils";
 import driverService from "@/services/driver.service";
 import orderService from "@/services/order.service";
 import { DriverData } from "@/types/driver";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { useParams } from "next/navigation";
+import { Orders } from "@/types/order";
+import Cookies from "js-cookie";
+import { ArrowLeft, BellRing, Calendar, CreditCard, DollarSign, Edit, FileText, MapPin, Package as PackageIcon, Star, Store, Ticket, Truck, User, Weight } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import * as React from "react";
+import { useEffect, useState } from "react";
+import { PacmanLoader } from "react-spinners";
 
 const OrderDetailPage = () => {
   const router = useRouter();
@@ -292,6 +290,13 @@ const OrderDetailPage = () => {
                   <div>
                     <p className="text-muted-foreground">Catatan dari Customer</p>
                     <p className="font-medium italic">{order.note ? order.note : "Tidak Ada Catatan"}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <FileText className="h-5 w-5 mt-0.5 text-muted-foreground flex-shrink-0" />
+                  <div>
+                    <p className="text-muted-foreground">Alasan pembatalan</p>
+                    <p className="font-medium italic">{order.cancel_reason ? order.cancel_reason : "-"}</p>
                   </div>
                 </div>
               </>
