@@ -181,8 +181,7 @@ const OrderTotalPage = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Order ID & Customer</TableHead>
-                  <TableHead>Laundry</TableHead>
-                  <TableHead>Paket</TableHead>
+                  <TableHead>Laundry & Paket</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Harga</TableHead>
                   <TableHead>Harga Markup</TableHead>
@@ -195,10 +194,12 @@ const OrderTotalPage = () => {
                   <TableRow key={order.id} className="hover:bg-muted/50">
                     <TableCell className="font-mono text-xs">
                       {order.customer?.name}
-                      <div className="text-[10px] text-gray-500 font-bold font-sans">{order.id}</div>
+                      <div className="text-[12px] text-gray-500 font-bold font-sans">{order.id}</div>
                     </TableCell>
-                    <TableCell>{order.laundry_partner.name}</TableCell>
-                    <TableCell>{order.package.name}</TableCell>
+                    <TableCell className="font-mono text-xs">
+                      {order.laundry_partner.name}
+                      <div className="text-[12px] text-gray-500 font-bold font-sans">{order.package.name}</div>
+                    </TableCell>
                     <TableCell>{getStatusBadge(order.status)}</TableCell>
                     <TableCell>{formatRupiah(order.price)}</TableCell>
                     <TableCell>{formatRupiah(order.price_after)}</TableCell>
