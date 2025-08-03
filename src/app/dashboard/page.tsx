@@ -1,27 +1,26 @@
 "use client";
 
-import * as React from "react";
-import { useState, useEffect } from "react";
-import Cookies from "js-cookie";
-import Link from "next/link";
-import { ArrowUpRight, CalendarIcon, DollarSign, Users, FileDown } from "lucide-react"; 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import Cookies from "js-cookie";
+import { ArrowUpRight, CalendarIcon, DollarSign, FileDown, Users } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
-import { Orders } from "@/types/order";
-import orderService from "@/services/order.service";
-import laundryService from "@/services/laundry.service";
-import { getStatusBadge } from "@/components/utils/badge.utils";
-import { formatRupiah } from "@/components/utils/format.utils";
-import { PacmanLoader } from "react-spinners";
-import { useSidebar } from "@/components/ui/sidebar";
-import { format, subDays } from "date-fns";
-import { DateRange } from "react-day-picker";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { useSidebar } from "@/components/ui/sidebar";
 import { AlertUtils } from "@/components/utils/alert.utils";
+import { getStatusBadge } from "@/components/utils/badge.utils";
+import { formatRupiah } from "@/components/utils/format.utils";
+import { cn } from "@/lib/utils";
+import laundryService from "@/services/laundry.service";
+import orderService from "@/services/order.service";
+import { Orders } from "@/types/order";
+import { format, subDays } from "date-fns";
+import { DateRange } from "react-day-picker";
+import { PacmanLoader } from "react-spinners";
 
 export default function DashboardPage() {
   const { state } = useSidebar();
@@ -94,7 +93,8 @@ const handleExport = async () => {
       const link = document.createElement('a');
       link.href = url;
 
-      const fileName = `Laporan-Order-${format(new Date(), "yyyy-MM-dd")}.xlsx`;
+      const randomSuffix = Math.floor(Math.random() * 1e6); // 6-digit random number
+      const fileName = `Laporan_Order_[${formattedStartDate} sampai ${formattedEndDate}]_diunduh_pada_${format(new Date(), "yyyy-MM-dd")}_${randomSuffix}.xlsx`;
       link.setAttribute('download', fileName);
 
       document.body.appendChild(link);
