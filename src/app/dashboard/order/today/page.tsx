@@ -13,29 +13,23 @@ import orderService from "@/services/order.service";
 import getPaginationRange from "@/components/utils/pagination.utils";
 import { Input } from "@/components/ui/input";
 import useMediaQuery from "@/components/utils/media.query.utils";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Orders } from "@/types/order";
 import { useSidebar } from "@/components/ui/sidebar";
-import { getStatusBadge } from "@/components/utils/badge.utils";
+import { getPaymentBadge, getStatusBadge } from "@/components/utils/badge.utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { formatRupiah, formatDate } from "@/components/utils/format.utils";
+import { format } from "date-fns";
+
 
 const OrderTodayPage = () => {
-  const { state } = useSidebar()
+  const { state } = useSidebar();
   const [orders, setOrders] = useState<Orders[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalOrderToday, setTotalOrderToday] = useState(0)
+  const [totalOrderToday, setTotalOrderToday] = useState(0);
 
   const isMobile = useMediaQuery("(max-width: 768px)");
   const itemsPerPage = isMobile ? 5 : 8;
@@ -46,10 +40,10 @@ const OrderTodayPage = () => {
       try {
         setLoading(true);
         if (accessToken) {
-          const today = new Date().toISOString().split('T')[0]; 
+          const today = new Date().toISOString().split("T")[0];
           const response = await orderService.getOrders(accessToken, today, today);
           const sortedResponse = response.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-          setTotalOrderToday(sortedResponse.length)
+          setTotalOrderToday(sortedResponse.length);
           setOrders(sortedResponse);
         }
       } catch (error) {
@@ -62,10 +56,8 @@ const OrderTodayPage = () => {
     fetchOrders();
   }, []);
 
-  const filteredOrders = orders.filter(o =>
-    o.id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    o.customer.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    o.laundry_partner.name?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredOrders = orders.filter(
+    (o) => o.id?.toLowerCase().includes(searchQuery.toLowerCase()) || o.customer.name?.toLowerCase().includes(searchQuery.toLowerCase()) || o.laundry_partner.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
@@ -90,192 +82,192 @@ const OrderTodayPage = () => {
   }
 
   return (
-     <div className={`transition-all duration-300 ease-in-out flex flex-col flex-grow p-2 md:p-4 ${
-        state === "expanded"
-          ? "w-[100dvw] md:w-[90dvw] lg:w-[80dvw]"
-          : "w-[100dvw] md:w-[115dvw] lg:w-[95dvw]"
-      }`}
-    >
-        <CardHeader>
-          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
-            <div className="flex items-center gap-4">
-              <div>
-                <CardTitle>Order Hari Ini </CardTitle>
-                <CardDescription>Total Order Hari Ini: {totalOrderToday}</CardDescription>
-              </div>
-            </div>
-            <div className="flex w-full items-center gap-2 sm:w-auto">
-              <div className="relative flex-1 sm:flex-initial sm:w-64">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Cari order..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-8 w-full dark:focus:ring-white/70"
-                />
-              </div>
+    <div className={`transition-all duration-300 ease-in-out flex flex-col flex-grow p-2 md:p-4 ${state === "expanded" ? "w-[100dvw] md:w-[90dvw] lg:w-[80dvw]" : "w-[100dvw] md:w-[115dvw] lg:w-[95dvw]"}`}>
+      <CardHeader>
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+          <div className="flex items-center gap-4">
+            <div>
+              <CardTitle>Order Hari Ini </CardTitle>
+              <CardDescription>Total Order Hari Ini: {totalOrderToday}</CardDescription>
             </div>
           </div>
-        </CardHeader>
+          <div className="flex w-full items-center gap-2 sm:w-auto">
+            <div className="relative flex-1 sm:flex-initial sm:w-64">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input type="search" placeholder="Cari order..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-8 w-full dark:focus:ring-white/70" />
+            </div>
+          </div>
+        </div>
+      </CardHeader>
 
-        <CardContent className="flex-grow">
-          <div className="hidden md:block">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Order ID</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Laundry</TableHead>
-                  <TableHead>Paket</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Total</TableHead>
-                  <TableHead>Tanggal Jemput</TableHead>
+      <CardContent className="flex-grow">
+        <div className="hidden md:block">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Order ID & Customer</TableHead>
+                <TableHead>Laundry & Paket</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Status Bayar</TableHead>
+                <TableHead>Harga</TableHead>
+                <TableHead>Harga Markup</TableHead>
+                <TableHead>Kupon</TableHead>
+                <TableHead>Tanggal Jemput</TableHead>
+                <TableHead>Dipesan Tanggal</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {currentOrders?.map((order) => (
+                <TableRow key={order.id} className="hover:bg-muted/50">
+                  <TableCell className="font-mono text-xs">
+                    {order.customer?.name}
+                    <div className="text-[12px] text-gray-500 font-bold font-sans">{order.id}</div>
+                  </TableCell>
+                  <TableCell className="font-mono text-xs">
+                    {order.laundry_partner.name}
+                    <div className="text-[12px] text-gray-500 font-bold font-sans">{order.package.name}</div>
+                  </TableCell>
+                  <TableCell>{getStatusBadge(order.status)}</TableCell>
+                  <TableCell>{getPaymentBadge(order.status_payment)}</TableCell>
+                  <TableCell>{formatRupiah(order.price)}</TableCell>
+                  <TableCell>{formatRupiah(order.price_after)}</TableCell>
+                  <TableCell className="text-[12px]">{order.coupon_code}</TableCell>
+                  <TableCell>{order.pickup_date}</TableCell>
+                  <TableCell>{format(new Date(order.created_at), "dd MMM yyyy, HH:mm")}</TableCell>
+
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only">Buka menu</span>
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                        <Link
+                          href={{
+                            pathname: `/dashboard/order/history/${order.id}`,
+                          }}
+                          passHref
+                        >
+                          <DropdownMenuItem>
+                            <Edit className="mr-2 h-4 w-4" />
+                            See Detail
+                          </DropdownMenuItem>
+                        </Link>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {currentOrders?.map((order) => (
-                  <TableRow key={order.id} className="hover:bg-muted/50">
-                    <TableCell className="font-mono text-xs">{order.id}</TableCell>
-                    <TableCell className="font-medium">{order.customer.name}</TableCell>
-                    <TableCell>{order.laundry_partner.name}</TableCell>
-                    <TableCell>{order.package.name}</TableCell>
-                    <TableCell>{getStatusBadge(order.status)}</TableCell>
-                    <TableCell>{formatRupiah(order.price)}</TableCell>
-                    <TableCell>{order.pickup_date}</TableCell>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
 
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Buka menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Aksi</DropdownMenuLabel>
-                            <Link
-                                href={{
-                                    pathname: `/dashboard/order/history/${order.id}`,
-                                }} 
-                                passHref
-                            >
-                                <DropdownMenuItem>
-                                    <Edit className="mr-2 h-4 w-4" />
-                                    See Detail
-                                </DropdownMenuItem>
-                            </Link>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-
-          <div className="grid gap-4 md:hidden py-2 ">
-            {currentOrders?.map((order) => (
-              <Card key={order.id} className="gap-1 rounded-xl shadow-sm dark:border-gray-700 bg-white dark:bg-black transition">
-                <CardHeader className="px-4 py-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1">
-                      <CardTitle className="text-md font-semibold text-gray-800 dark:text-white truncate">{order.customer.name}</CardTitle>
-                      <CardDescription className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        {order.id}
-                      </CardDescription>
-                    </div>
-                    {getStatusBadge(order.status)}
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Buka menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Aksi</DropdownMenuLabel>
-                            <Link
-                                href={{
-                                    pathname: `/dashboard/order/history/${order.id}`,
-                                }} 
-                                passHref
-                            >
-                                <DropdownMenuItem>
-                                    <Edit className="mr-2 h-4 w-4" />
-                                    See Detail
-                                </DropdownMenuItem>
-                            </Link>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+        <div className="grid gap-4 md:hidden py-2 ">
+          {currentOrders?.map((order) => (
+            <Card key={order.id} className="gap-1 rounded-xl shadow-sm dark:border-gray-700 bg-white dark:bg-black transition">
+              <CardHeader className="px-4 py-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1">
+                    <CardTitle className="text-md font-semibold text-gray-800 dark:text-white truncate">{order.customer.name}</CardTitle>
+                    <CardDescription className="text-xs text-gray-500 dark:text-gray-400 mt-1">{order.id}</CardDescription>
                   </div>
-                  
-                </CardHeader>
-                <CardContent className="px-4 pt-1 pb-3 text-sm text-gray-700 dark:text-gray-300">
-                  <div className="flex flex-col text-xs space-y-1">
-                    <span className="font-semibold">{order.laundry_partner.name}</span>
-                    <span className="text-muted-foreground">{order.package.name}</span>
-                    <span className="text-muted-foreground">Pickup: {order.pickup_date}</span>
-                  </div>
-                </CardContent>
-                <CardFooter className="px-4 pb-3 flex justify-between items-center">
-                    <span className="text-xs text-muted-foreground">{formatDate(order.created_at)}</span>
-                    <span className="font-bold text-lg">{formatRupiah(order.price)}</span>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-        </CardContent>
-
-        {totalPages > 1 && (
-          <CardFooter className="border-t pt-4">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious 
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handlePageChange(currentPage - 1);
-                    }}
-                    className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
-                  />
-                </PaginationItem>
-                {paginationRange?.map((page, index) => {
-                  if (page === '...') {
-                    return <PaginationItem key={`ellipsis-${index}`}><PaginationEllipsis /></PaginationItem>;
-                  }
-                  return (
-                    <PaginationItem key={page}>
-                      <PaginationLink 
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handlePageChange(page as number);
+                  {getStatusBadge(order.status)}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Buka menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                      <Link
+                        href={{
+                          pathname: `/dashboard/order/history/${order.id}`,
                         }}
-                        isActive={currentPage === page}
+                        passHref
                       >
-                        {page}
-                      </PaginationLink>
+                        <DropdownMenuItem>
+                          <Edit className="mr-2 h-4 w-4" />
+                          See Detail
+                        </DropdownMenuItem>
+                      </Link>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </CardHeader>
+              <CardContent className="px-4 pt-1 pb-3 text-sm text-gray-700 dark:text-gray-300">
+                <div className="flex flex-col text-xs space-y-1">
+                  <span className="font-semibold">{order.laundry_partner.name}</span>
+                  <span className="text-muted-foreground">{order.package.name}</span>
+                  <span className="text-muted-foreground">Pickup: {order.pickup_date}</span>
+                </div>
+              </CardContent>
+              <CardFooter className="px-4 pb-3 flex justify-between items-center">
+                <span className="text-xs text-muted-foreground">{formatDate(order.created_at)}</span>
+                <span className="font-bold text-lg">{formatRupiah(order.price)}</span>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      </CardContent>
+
+      {totalPages > 1 && (
+        <CardFooter className="border-t pt-4">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handlePageChange(currentPage - 1);
+                  }}
+                  className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+              {paginationRange?.map((page, index) => {
+                if (page === "...") {
+                  return (
+                    <PaginationItem key={`ellipsis-${index}`}>
+                      <PaginationEllipsis />
                     </PaginationItem>
                   );
-                })}
-                <PaginationItem>
-                  <PaginationNext 
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handlePageChange(currentPage + 1);
-                    }}
-                    className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          </CardFooter>
-        )}
+                }
+                return (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handlePageChange(page as number);
+                      }}
+                      isActive={currentPage === page}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              })}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handlePageChange(currentPage + 1);
+                  }}
+                  className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </CardFooter>
+      )}
     </div>
   );
-}
+};
 
 export default OrderTodayPage;
