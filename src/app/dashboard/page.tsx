@@ -21,6 +21,7 @@ import { Orders } from "@/types/order";
 import { format, subDays } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { PacmanLoader } from "react-spinners";
+import customerService from "@/services/customer.service";
 
 export default function DashboardPage() {
   const { state } = useSidebar();
@@ -30,6 +31,7 @@ export default function DashboardPage() {
     totalPriceBefore: 0,
     totalOrders: 0,
     totalLaundries: 0,
+    totalUsers: 0,
   });
   const [loading, setLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
@@ -37,6 +39,25 @@ export default function DashboardPage() {
     from: subDays(new Date(), 29),
     to: new Date(),
   });
+  const [isOpenCalendar, setIsOpenCalendar] = useState(false);
+  const [tempDate, setTempDate] = useState<DateRange | undefined>(date);
+
+  const handleApplyCalendar = () => {
+    setDate(tempDate);
+    setIsOpenCalendar(false);
+  };
+
+  const handleCancelCalendar = () => {
+    setTempDate(date);
+    setIsOpenCalendar(false);
+  };
+
+  const handleOpenChangeCalendar = (open: boolean) => {
+    if (open) {
+      setTempDate(date);
+    }
+    setIsOpenCalendar(open);
+  };
 
   const accessToken = Cookies.get("accessToken");
 
@@ -47,16 +68,16 @@ export default function DashboardPage() {
         return;
       }
 
-      setLoading(true); 
+      setLoading(true);
       try {
         const formattedStartDate = format(date.from, "yyyy-MM-dd");
         const formattedEndDate = format(date.to, "yyyy-MM-dd");
 
-        const [ordersResponse, laundriesResponse] = await Promise.all([orderService.getOrders(accessToken, formattedStartDate, formattedEndDate), laundryService.getLaundries(accessToken)]);
+        const [ordersResponse, laundriesResponse, usersResponse] = await Promise.all([orderService.getOrders(accessToken, formattedStartDate, formattedEndDate), laundryService.getLaundries(accessToken), customerService.getCustomers(accessToken)]);
 
         const sortedOrders = ordersResponse.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-        const totalPriceAfter = sortedOrders.reduce((acc, order) => acc + parseFloat(order.price_after || '0'), 0);
-        const totalPriceBefore = sortedOrders.reduce((acc, order) => acc + parseFloat(order.price || '0'), 0);
+        const totalPriceAfter = sortedOrders.reduce((acc, order) => acc + parseFloat(order.price_after || "0"), 0);
+        const totalPriceBefore = sortedOrders.reduce((acc, order) => acc + parseFloat(order.price || "0"), 0);
 
         setRecentOrders(sortedOrders.slice(0, 5));
         setStats({
@@ -64,6 +85,7 @@ export default function DashboardPage() {
           totalPriceBefore: totalPriceBefore,
           totalOrders: sortedOrders.length,
           totalLaundries: laundriesResponse.length,
+          totalUsers: usersResponse.length,
         });
       } catch (error) {
         AlertUtils.showError(error instanceof Error ? error.message : "Gagal mendapatkan data order.");
@@ -75,12 +97,12 @@ export default function DashboardPage() {
     fetchDashboardData();
   }, [date, accessToken]);
 
-const handleExport = async () => {
+  const handleExport = async () => {
     if (!accessToken) {
       AlertUtils.showError("Sesi Anda telah berakhir. Silakan login kembali.");
       return;
     }
-    
+
     setIsExporting(true);
     try {
       const formattedStartDate = date?.from ? format(date.from, "yyyy-MM-dd") : undefined;
@@ -88,13 +110,13 @@ const handleExport = async () => {
 
       const response = await orderService.exportExcel(accessToken, formattedStartDate, formattedEndDate);
 
-      const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const blob = new Blob([response.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
 
       const fileName = `Laporan_Order_[${formattedStartDate} sampai ${formattedEndDate}]_diunduh_pada_${new Date().toISOString()}.xlsx`;
-      link.setAttribute('download', fileName);
+      link.setAttribute("download", fileName);
 
       document.body.appendChild(link);
       link.click();
@@ -102,14 +124,12 @@ const handleExport = async () => {
       window.URL.revokeObjectURL(url);
 
       AlertUtils.showSuccess("File Excel sedang diunduh.");
-
     } catch (error) {
       AlertUtils.showError(error instanceof Error ? error.message : "Gagal mengekspor data.");
     } finally {
       setIsExporting(false);
     }
   };
-
 
   if (loading) {
     return (
@@ -125,7 +145,7 @@ const handleExport = async () => {
         <div className="flex flex-wrap items-center w-full justify-between gap-4">
           <h1 className="text-lg font-semibold md:text-2xl">Selamat Datang, Admin Akucuciin!</h1>
           <div className="flex flex-wrap items-center gap-2">
-            <Popover>
+            <Popover open={isOpenCalendar} onOpenChange={handleOpenChangeCalendar}>
               <PopoverTrigger asChild>
                 <Button id="date" variant={"outline"} className={cn("w-full sm:w-[300px] justify-start text-left font-normal", !date && "text-muted-foreground")}>
                   <CalendarIcon className="mr-2 h-4 w-4" />
@@ -143,17 +163,24 @@ const handleExport = async () => {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="end">
-                <Calendar initialFocus mode="range" defaultMonth={date?.from} selected={date} onSelect={setDate} numberOfMonths={2} />
+                <Calendar initialFocus mode="range" defaultMonth={tempDate?.from} selected={tempDate} onSelect={setTempDate} numberOfMonths={2} />
+                <div className="flex justify-end gap-2 p-3 border-t">
+                  <Button variant="ghost" size="sm" onClick={handleCancelCalendar}>
+                    Batal
+                  </Button>
+                  <Button size="sm" onClick={handleApplyCalendar}>
+                    Terapkan
+                  </Button>
+                </div>
               </PopoverContent>
             </Popover>
-            {/* Export Button */}
             <Button onClick={handleExport} disabled={isExporting}>
               <FileDown className="mr-2 h-4 w-4" />
               {isExporting ? "Mengekspor..." : "Export Excel"}
             </Button>
           </div>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 md:gap-4 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Price After</CardTitle>
@@ -182,6 +209,16 @@ const handleExport = async () => {
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalOrders}</div>
               <p className="text-xs text-muted-foreground">Jumlah order dalam rentang tanggal</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.totalUsers}</div>
+              <p className="text-xs text-muted-foreground">Jumlah user daftar</p>
             </CardContent>
           </Card>
         </div>
