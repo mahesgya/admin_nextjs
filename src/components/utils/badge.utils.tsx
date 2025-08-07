@@ -1,5 +1,16 @@
 import { Badge } from "../ui/badge";
 
+export const statusOptionsDropdown = [
+  { value: "ALL", label: "Semua Status" },
+  { value: "exbatal", label: "Kecuali Batal dan Kesalahan" },
+  { value: "pending", label: "Pending" },
+  { value: "penjemputan", label: "Penjemputan" },
+  { value: "pencucian", label: "Pencucian" },
+  { value: "selesai", label: "Selesai" },
+  { value: "batal", label: "Batal" },
+  { value: "kesalahan", label: "Kesalahan" },
+];
+
 export const statusOptions = ["pending", "penjemputan", "pencucian", "selesai", "batal", "kesalahan"];
 
 export const getStatusBadge = (status: (typeof statusOptions)[number]) => {
