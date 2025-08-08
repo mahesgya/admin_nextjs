@@ -26,7 +26,6 @@ import { DateRange } from "react-day-picker";
 import { PacmanLoader } from "react-spinners";
 import { statusOptionsDropdown } from "@/components/utils/badge.utils";
 
-
 const OrderTotalPage = () => {
   const { state } = useSidebar();
   const [orders, setOrders] = useState<Orders[]>([]);
@@ -50,6 +49,10 @@ const OrderTotalPage = () => {
   const handleCancelCalendar = () => {
     setTempDate(date);
     setIsOpenCalendar(false);
+  };
+
+  const handleResetCalendar = () => {
+    setTempDate(undefined);
   };
 
   const handleOpenChangeCalendar = (open: boolean) => {
@@ -99,18 +102,13 @@ const OrderTotalPage = () => {
         return true;
       }
 
-      if(statusFilter === "exbatal"){
-        return order.status !== "batal" && order.status !== "kesalahan"
+      if (statusFilter === "exbatal") {
+        return order.status !== "batal" && order.status !== "kesalahan";
       }
 
       return order.status === statusFilter;
     })
-    .filter(
-      (o) =>
-        o.id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        o.customer.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        o.laundry_partner.name?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    .filter((o) => o.id?.toLowerCase().includes(searchQuery.toLowerCase()) || o.customer.name?.toLowerCase().includes(searchQuery.toLowerCase()) || o.laundry_partner.name?.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -186,7 +184,11 @@ const OrderTotalPage = () => {
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="end">
                   <Calendar initialFocus mode="range" defaultMonth={tempDate?.from} selected={tempDate} onSelect={setTempDate} numberOfMonths={2} />
-                  <div className="flex justify-end gap-2 p-3 border-t">
+                  <Button variant="ghost" size="sm" onClick={handleResetCalendar}>
+                    Reset
+                  </Button>
+
+                  <div className="flex gap-2">
                     <Button variant="ghost" size="sm" onClick={handleCancelCalendar}>
                       Batal
                     </Button>

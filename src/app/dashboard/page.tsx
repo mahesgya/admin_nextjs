@@ -52,6 +52,10 @@ export default function DashboardPage() {
     setIsOpenCalendar(false);
   };
 
+  const handleResetCalendar = () => {
+    setTempDate(undefined);
+  };
+
   const handleOpenChangeCalendar = (open: boolean) => {
     if (open) {
       setTempDate(date);
@@ -73,7 +77,11 @@ export default function DashboardPage() {
         const formattedStartDate = format(date.from, "yyyy-MM-dd");
         const formattedEndDate = format(date.to, "yyyy-MM-dd");
 
-        const [ordersResponse, laundriesResponse, usersResponse] = await Promise.all([orderService.getOrders(accessToken, formattedStartDate, formattedEndDate), laundryService.getLaundries(accessToken), customerService.getCustomers(accessToken)]);
+        const [ordersResponse, laundriesResponse, usersResponse] = await Promise.all([
+          orderService.getOrders(accessToken, formattedStartDate, formattedEndDate),
+          laundryService.getLaundries(accessToken),
+          customerService.getCustomers(accessToken),
+        ]);
 
         const sortedOrders = ordersResponse.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         const totalPriceAfter = sortedOrders.reduce((acc, order) => acc + parseFloat(order.price_after || "0"), 0);
@@ -165,12 +173,18 @@ export default function DashboardPage() {
               <PopoverContent className="w-auto p-0" align="end">
                 <Calendar initialFocus mode="range" defaultMonth={tempDate?.from} selected={tempDate} onSelect={setTempDate} numberOfMonths={2} />
                 <div className="flex justify-end gap-2 p-3 border-t">
-                  <Button variant="ghost" size="sm" onClick={handleCancelCalendar}>
-                    Batal
+                  <Button variant="ghost" size="sm" onClick={handleResetCalendar}>
+                    Reset
                   </Button>
-                  <Button size="sm" onClick={handleApplyCalendar}>
-                    Terapkan
-                  </Button>
+
+                  <div className="flex gap-2">
+                    <Button variant="ghost" size="sm" onClick={handleCancelCalendar}>
+                      Batal
+                    </Button>
+                    <Button size="sm" onClick={handleApplyCalendar}>
+                      Terapkan
+                    </Button>
+                  </div>
                 </div>
               </PopoverContent>
             </Popover>
