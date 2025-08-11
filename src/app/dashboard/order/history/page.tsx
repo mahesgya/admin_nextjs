@@ -184,17 +184,19 @@ const OrderTotalPage = () => {
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="end">
                   <Calendar initialFocus mode="range" defaultMonth={tempDate?.from} selected={tempDate} onSelect={setTempDate} numberOfMonths={2} />
-                  <Button variant="ghost" size="sm" onClick={handleResetCalendar}>
-                    Reset
-                  </Button>
+                  <div className="flex justify-end gap-2 p-3 border-t">
+                    <Button variant="ghost" size="sm" onClick={handleResetCalendar}>
+                      Reset
+                    </Button>
 
-                  <div className="flex gap-2">
-                    <Button variant="ghost" size="sm" onClick={handleCancelCalendar}>
-                      Batal
-                    </Button>
-                    <Button size="sm" onClick={handleApplyCalendar}>
-                      Terapkan
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button variant="ghost" size="sm" onClick={handleCancelCalendar}>
+                        Batal
+                      </Button>
+                      <Button size="sm" onClick={handleApplyCalendar}>
+                        Terapkan
+                      </Button>
+                    </div>
                   </div>
                 </PopoverContent>
               </Popover>
